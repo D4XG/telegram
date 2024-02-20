@@ -1305,8 +1305,6 @@ if (cluster.isMaster) {
     const currentDate = new Date();
     // ...
 
-
-     console.clear()
       console.log(`Attack Sent To All Available Servers .... !!`.bgRed),
       console.log(`Methods By @prifxz` .bgRed)
   for (let _ of Array.from({length: thread})) {

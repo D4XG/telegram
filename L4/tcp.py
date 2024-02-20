@@ -92,7 +92,7 @@ def main():
     duration = int(sys.argv[5])
 
     tcp_ports = [80, 443, 8080, 22]
-    protocol = 'UDP' if port and port not in [80, 443] else 'TCP'
+    protocol = 'UDP' if port and port not in [80, 443] else 'UDP'
 
     print(f"{fg(196)}Starting {fg(197)}Attack {fg(198)}on {fg(200)}{ip}{fg(255)}:{fg(200)}{port} {fg(202)}({protocol}){attr(0)}", end='\r')
     xneon = xNeonDzai(ip, port, force, threads, protocol)
