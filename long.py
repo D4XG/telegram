@@ -21,12 +21,12 @@ from server import alive
 alive()
 
 
-bot_token = '6508337693:AAEy5Vlirw5hPG2EWW3wP7bEYrltfhhhW-U' 
+bot_token = 'PASTE YOUR BOT TOKEN HERE' 
 bot = telebot.TeleBot(bot_token)
 
 allowed_users = []
 processes = []
-ADMIN_ID = 5111191060
+ADMIN_ID = YOUR MF ID
 proxy_update_count = 0
 last_proxy_update_time = time.time()
 
