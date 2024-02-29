@@ -443,7 +443,7 @@ def check_ip(message):
         ip_list = socket.gethostbyname_ex(url)[2]
         ip_count = len(ip_list)
 
-        reply = f"IP : {url}\nLà: {', '.join(ip_list)}\n"
+        reply = f"Target : {url}\nIPs: {', '.join(ip_list)}\n"
         if ip_count == 1:
             reply += "This website may not have AntiDDOS system"
         else:
